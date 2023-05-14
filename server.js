@@ -4,6 +4,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const dataBase = require('./db.config/db.config')
 require("dotenv").config();
+const serverless = require('serverless-http')
 
 var corsOptions = {
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -41,12 +42,12 @@ require('./routes/blog.routes')(router);
 
 app.use('/blogApp/', router)
 
-/* module.exports = app
-module.exports.handler = serverless(app) */
+module.exports = app
+module.exports.handler = serverless(app)
 
-const PORT = process.env.APPPORT || 9000
+/* const PORT = process.env.APPPORT || 9000
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`)
-})
+}) */
 
