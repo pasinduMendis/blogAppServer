@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const User=require("../models/user.model");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
@@ -24,8 +24,7 @@ exports.signUp = async (req, res) => {
         userId:uuidv4()
       };
       
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(user.password, salt);
+      user.password = await bcrypt.hashSync(user.password, 8);
 
       const userObj=new User(user)
       userObj
@@ -68,7 +67,7 @@ exports.signIn = async (req, res) => {
       return;
     } else {
        
-        const validPassword = await bcrypt.compare(password, findIsExistUser.password);
+        const validPassword = await bcrypt. bcrypt.compareSync(password, findIsExistUser.password);
         if(!validPassword){
             res.status(403).send({ message: "invalid password!" });
             return;
