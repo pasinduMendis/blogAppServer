@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const User=require("../models/user.model");
+const User=require("../src/routes/models/user.model");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 const jwt = require('jsonwebtoken')

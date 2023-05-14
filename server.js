@@ -40,7 +40,7 @@ require('./routes/auth.routes')(router);
 require('./routes/blog.routes')(router);
 
 
-app.use('/blogApp/', router)
+app.use('/.netlify/functions/', router)
 
 module.exports = app
 module.exports.handler = serverless(app)
