@@ -24,7 +24,7 @@ exports.signUp = async (req, res) => {
         userId:uuidv4()
       };
       
-      user.password = await bcrypt.hashSync(user.password, 8);
+      user.password = bcrypt.hashSync(user.password, 8);
 
       const userObj=new User(user)
       userObj
@@ -67,7 +67,7 @@ exports.signIn = async (req, res) => {
       return;
     } else {
        
-        const validPassword = await bcrypt. bcrypt.compareSync(password, findIsExistUser.password);
+        const validPassword = bcrypt.compareSync(password, findIsExistUser.password);
         if(!validPassword){
             res.status(403).send({ message: "invalid password!" });
             return;
