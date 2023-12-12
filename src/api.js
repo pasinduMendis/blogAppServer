@@ -1,15 +1,19 @@
-const express = require("express");
-const cors = require("cors");
-var bodyParser = require("body-parser");
-const path = require("path");
-const serverless = require('serverless-http')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const express = require('express')
 const mongoose = require('mongoose')
+const dataBase = require('./db.config/db.config')
 require("dotenv").config();
+const serverless = require('serverless-http')
 
-
+var corsOptions = {
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  credentials: true, 
+  optionsSuccessStatus: 200,
+}
 
 mongoose
-  .connect(process.env.DBCONFIG, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(dataBase.DB, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(
     () => {
       console.log('Database is successfully connected')
@@ -19,45 +23,31 @@ mongoose
     }
   )
 
+const app = express()
+const router = express.Router()
 
-const app = express();
+app.options('*', cors());
+app.use(bodyParser.urlencoded({ limit: '50mb',extended: true }));
+app.use(bodyParser.json({limit: '50mb'}));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded())
+app.use(express.json())
+app.use(
+  cors(corsOptions)
+)
 
-app.use(express.static(path.join(__dirname, "public")));
+require('./routes/auth.routes')(router);
+require('./routes/blog.routes')(router);
 
-app.use(cors());
 
-//routers
-const vendor = require("./routes/vendor.route");
-const user = require("./routes/user.route");
-const business = require("./routes/business.route");
-const category = require("./routes/category.route");
-const product = require("./routes/product.route");
-const order = require("./routes/order.route");
-
-const notFoundMiddleware = require("./middleware/notFound.middleware");
-
-const router = express.Router();
-
-app.use("/.netlify/functions//api/v1/vendor", vendor);
-app.use("/.netlify/functions//api/v1/user", user);
-app.use("/.netlify/functions//api/v1/business", business);
-app.use("/.netlify/functions//api/v1/category", category);
-app.use("/.netlify/functions//api/v1/product", product);
-app.use("/.netlify/functions//api/v1/order", order);
-app.use("/", router.get("/", (req, res)=>{
-  res.send('welocome to sl handycraft backend')
-}));
-
-app.use(notFoundMiddleware);
+app.use('/.netlify/functions/', router)
 
 module.exports = app
 module.exports.handler = serverless(app)
 
-/*  const PORT = process.env.APPPORT || 9000
+/* const PORT = process.env.APPPORT || 9000
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`)
-})  */
+}) */
+
